@@ -19,8 +19,52 @@ const PORT = process.env.PORT || 8000
 
 require("express-async-errors")
 
-/* ------------------------------------------------------- */
 dbConnection()
+
+//body parser
+app.use(express.json()) //bu çağırma işlemini yapmadan post isteği atıldığında body parse edilemeyeceği için json js dosyasına dönüşemeyeceği içn hata verecektir
+
+
+// httpOnly: true XSS Cross Site Scripting
+app.use(require("cookie-session")({
+    secret:process.env.SECRET_KEY
+
+    // cookie:{
+    //     secure:!(process.env.NODE_ENV=="development"),
+    //     httpOnly:false,
+    //     maxAge:24*60*60*1000,}
+    }
+
+
+))
+
+app.use(require('./src/middlewares/findSearchSortPage'))
+
+//HomePath
+
+app.all("/",(req,res)=>{
+    res.send({
+        error:false,
+        message:"Wellcome to PERSONNEL API",
+        session:req.session,
+        isLogin:req.isLogin
+    })
+})
+
+app.use("/departments",require("./src/routes/department.router"))
+
+app.all("*",async(req,res)=>{
+
+    //throw CustomeError("Route not available")
+
+    res.status(404).send({
+        error:true,
+        message: "Route not available"
+    })
+})
+
+/* ------------------------------------------------------- */
+
 /* ------------------------------------------------------- */
 
 // errorHandler:
