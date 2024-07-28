@@ -51,7 +51,11 @@ app.all("/",(req,res)=>{
     })
 })
 
+//Departments
 app.use("/departments",require("./src/routes/department.router"))
+
+//Personnels
+app.use("/personnels",require("./src/routes/personnel.router"))
 
 app.all("*",async(req,res)=>{
 
