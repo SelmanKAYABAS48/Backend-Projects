@@ -14,6 +14,16 @@ const dbConnection = function() {
 }
 
 /* ------------------------------------------------------- */
+// const dbConnection = async function() {   //! diğer yazım şekli
+//     try {
+//         await mongoose.connect(process.env.MONGODB)
+//         console.log('* DB Connected *')
+//     } catch (err) {
+//         console.log('* DB Not Connected *', err)
+//     }
+// }
+
+/* ------------------------------------------------------- */
 module.exports = {
     mongoose,
     dbConnection
