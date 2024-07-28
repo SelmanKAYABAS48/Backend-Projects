@@ -81,6 +81,13 @@ app.listen(PORT, () => console.log('http://127.0.0.1:' + PORT))
 // Syncronization (must be in commentLine):
 // require('./src/helpers/sync')()
 
+if (process.env.NODE_ENV == "development") { //!Bu kısım development aşamasında yapılamsı gereken kısım
+    return;
+    require("./src/helpers/dataCreate")()
+      .then((res) => console.log("Data synched"))
+      .catch((err) => console.error("Data could not synched"));
+  }
+
 //! dcConnection'da  mongoose'u import ettim oradan da export edip ilgili yerlerde kullanacağım 
 
 //* nodemon development zamanında kullandığımız için npm i -D nodemon olarak yükledim

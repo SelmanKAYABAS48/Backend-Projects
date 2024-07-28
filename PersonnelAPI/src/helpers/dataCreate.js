@@ -1,4 +1,6 @@
 "use strict";
+
+const { mongoose } = require('../configs/dbConnection')
 const departments = [
   {
     name: "Information Technology",
