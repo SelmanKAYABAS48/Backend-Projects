@@ -5,10 +5,13 @@
 // User Controllers:
 
 const User = require('../models/user')
-
-/* ------------------------------------------------------- */
+const Token = require('../models/token')
 
 const passwordEncrypt = require('../helpers/passwordEncrypt')
+
+const jwt = require('jsonwebtoken')
+
+/* ------------------------------------------------------- */
 
 // data = req.body
 const checkUserEmailAndPassword = function (data) {
@@ -87,8 +90,21 @@ module.exports = {
         // const data = await User.create(req.body)
         const data = await User.create(checkUserEmailAndPassword(req.body))
 
+        /* AUTO LOGIN */
+        // SimpleToken:
+        const tokenData = await Token.create({
+            userId: data._id,
+            token: passwordEncrypt(data._id + Date.now())
+        })
+        // JWT:
+        const accessToken = jwt.sign(data.toJSON(), process.env.ACCESS_KEY, { expiresIn: '30m' })
+        const refreshToken = jwt.sign({ _id: data._id, password: data.password }, process.env.REFRESH_KEY, { expiresIn: '3d' })
+        /* AUTO LOGIN */
+
         res.status(201).send({
             error: false,
+            token: tokenData.token,
+            bearer: { accessToken, refreshToken },
             data
         })
     },
