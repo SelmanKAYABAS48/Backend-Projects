@@ -2,16 +2,16 @@
 /* -------------------------------------------------------
     | FULLSTACK TEAM | NODEJS / EXPRESS |
 ------------------------------------------------------- */
-// Product Controllers:
+// Purchase Controllers:
 
-const Product = require('../models/product')
+const Purchase = require('../models/purchase')
 
 module.exports = {
 
     list: async (req, res) => {
         /*
-            #swagger.tags = ["Products"]
-            #swagger.summary = "List Products"
+            #swagger.tags = ["Purchases"]
+            #swagger.summary = "List Purchases"
             #swagger.description = `
                 You can use <u>filter[] & search[] & sort[] & page & limit</u> queries with endpoint.
                 <ul> Examples:
@@ -23,15 +23,11 @@ module.exports = {
             `
         */
 
-        // const data = await res.getModelList(Product, {}, ['categoryId', 'brandId'])
-        const data = await res.getModelList(Product, {}, [
-            { path: 'categoryId', select: 'name' },
-            { path: 'brandId', select: 'name' },
-        ])
+        const data = await res.getModelList(Purchase, {}, ['userId', 'firmId', 'brandId', 'productId'])
 
         res.status(200).send({
             error: false,
-            details: await res.getModelListDetails(Product),
+            details: await res.getModelListDetails(Purchase),
             data
         })
 
@@ -39,18 +35,21 @@ module.exports = {
 
     create: async (req, res) => {
         /*
-            #swagger.tags = ["Products"]
-            #swagger.summary = "Create Product"
+            #swagger.tags = ["Purchases"]
+            #swagger.summary = "Create Purchase"
             #swagger.parameters['body'] = {
                 in: 'body',
                 required: true,
                 schema: {
-                    $ref: "#/definitions/Product"
+                    $ref: "#/definitions/Purchase"
                 }
             }
         */
 
-        const data = await Product.create(req.body)
+        // Set userId from logined user:
+        req.body.userId = req.user._id
+
+        const data = await Purchase.create(req.body)
 
         res.status(201).send({
             error: false,
@@ -60,14 +59,11 @@ module.exports = {
 
     read: async (req, res) => {
         /*
-            #swagger.tags = ["Products"]
-            #swagger.summary = "Get Single Product"
+            #swagger.tags = ["Purchases"]
+            #swagger.summary = "Get Single Purchase"
         */
 
-        const data = await Product.findOne({ _id: req.params.id }).populate([
-            { path: 'categoryId', select: 'name' },
-            { path: 'brandId', select: 'name' },
-        ])
+        const data = await Purchase.findOne({ _id: req.params.id }).populate(['userId', 'firmId', 'brandId', 'productId'])
 
         res.status(200).send({
             error: false,
@@ -78,34 +74,34 @@ module.exports = {
 
     update: async (req, res) => {
         /*
-            #swagger.tags = ["Products"]
-            #swagger.summary = "Update Product"
+            #swagger.tags = ["Purchases"]
+            #swagger.summary = "Update Purchase"
             #swagger.parameters['body'] = {
                 in: 'body',
                 required: true,
                 schema: {
-                    $ref: "#/definitions/Product"
+                    $ref: "#/definitions/Purchase"
                 }
             }
         */
 
-        const data = await Product.updateOne({ _id: req.params.id }, req.body, { runValidators: true })
+        const data = await Purchase.updateOne({ _id: req.params.id }, req.body, { runValidators: true })
 
         res.status(202).send({
             error: false,
             data,
-            new: await Product.findOne({ _id: req.params.id })
+            new: await Purchase.findOne({ _id: req.params.id })
         })
 
     },
 
     delete: async (req, res) => {
         /*
-            #swagger.tags = ["Products"]
-            #swagger.summary = "Delete Product"
+            #swagger.tags = ["Purchases"]
+            #swagger.summary = "Delete Purchase"
         */
 
-        const data = await Product.deleteOne({ _id: req.params.id })
+        const data = await Purchase.deleteOne({ _id: req.params.id })
     
         res.status(data.deletedCount ? 204 : 404).send({
             error: !data.deletedCount,
